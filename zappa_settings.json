@@ -1,0 +1,19 @@
+{
+    "dev": {
+        "app_function": "sns_boomerang.api.app",
+        "aws_region": "ap-southeast-2",
+        "profile_name": "rulai",
+        "s3_bucket": "lambda-sns-boomerang",
+        "events": [
+           {
+               "function": "sns_boomerang.handler.job_stream_handler.handle",
+               "event_source": {
+                    "arn":  "arn:aws:dynamodb:ap-southeast-2:407736405886:table/t-jobs/stream/2017-08-13T11:18:27.959",
+                    "starting_position": "TRIM_HORIZON", // Supported values: TRIM_HORIZON, LATEST
+                    "batch_size": 50, // Max: 1000
+                    "enabled": true // Default is false
+               }
+           }
+       ]
+    }
+}
