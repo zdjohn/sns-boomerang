@@ -1,6 +1,9 @@
 {
     "dev": {
         "app_function": "sns_boomerang.api.app",
+        "keep_warm": false,
+        "cors": true,
+        "binary_support": false,
         "aws_region": "ap-southeast-2",
         "profile_name": "rulai",
         "s3_bucket": "lambda-sns-boomerang",
