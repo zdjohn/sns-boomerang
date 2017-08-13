@@ -1,2 +1,2 @@
 # sns-boomerang
-scheduled sns in lambda serverless way
+scheduled sns with aws lambda in a serverless way
