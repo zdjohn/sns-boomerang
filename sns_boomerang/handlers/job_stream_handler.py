@@ -13,7 +13,7 @@ class RecordImageType(Enum):
     OLD = 'OldImage'
 
 
-def handle(update):
+def handle_stream(update):
     """
     parsing dynamo db update events batch
     :param update: {'Records':[...]}
