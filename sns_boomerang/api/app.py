@@ -27,16 +27,5 @@ def schedule(topic):
     return {'id': job.id}, 201
 
 
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-    if request.method == 'OPTIONS':
-        # Allow clients to cache OPTIONS responses, so browsers won't fire another OPTIONS
-        # request with every API call.
-        response.headers.add('Cache-Control', 'public, max-age=31536000')
-    return response
-
 if __name__ == '__main__':
     app.run()
