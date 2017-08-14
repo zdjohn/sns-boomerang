@@ -79,7 +79,7 @@ class Job(object):
 
         :return:
         """
-        current = Decimal(datetime.utcnow().float_timestamp)
+        current = Decimal(datetime.utcnow().timestamp())
         jobs_response = JOB_TABLE.query(
             IndexName='is_valid-time_due-index',
             KeyConditionExpression=Key('is_valid').eq(1) & Key('time_due').lt(current)
