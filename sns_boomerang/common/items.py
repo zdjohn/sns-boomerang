@@ -130,7 +130,7 @@ class Topic(object):
     @classmethod
     def get(cls, topic, check_is_active=False):
         """get topic by topic name"""
-        item_response = TOPIC_TABLE.get_item(Key={'topic':topic})
+        item_response = TOPIC_TABLE.get_item(Key={'topic': topic})
         if item_response.get('Item'):
             item = item_response['Item']
             if not check_is_active or item.get('is_active'):
@@ -144,6 +144,10 @@ class Topic(object):
         self.arn = self.arn or self._create_sns_topic_arn(self.topic)
         self.time_updated = datetime.utcnow().timestamp
         TOPIC_TABLE.put_item(Item=self.__dict__)
+
+    def list_jobs(self):
+        # todo: implement
+        pass
 
     @staticmethod
     def _create_sns_topic_arn(sns_topic):
