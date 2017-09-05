@@ -11,13 +11,16 @@ from .schemas import *
 ns = Namespace('topics', description='schedule job')
 
 job = ns.model('Job', model=job_request_model())
+subscriber = ns.models('Subscriber', module=subscriber_request_model())
 
 
 @ns.route('/<string:topic>/schedule')
 @ns.param('topic', 'topic name: topic excepts \'a-z\', \'-\' and \'0-9\' only')
 class ScheduleJob(Resource):
+
+    @staticmethod
     @ns.expect(job, validate=True)
-    def post(self, topic):
+    def post(topic):
         if not util.letters_and_numbers_only(topic):
             return 'bad topic name, topic excepts \'a-z\' and \'-\' and \'0-9\' only ', 400
         json_request = request.json
@@ -54,4 +57,21 @@ class Subscriptions(Resource):
     def get(topic):
         subscriptions = TopicSubscriptions(topic)
         return subscriptions.lists(), 200
+
+
+@ns.route('/<string:topic>/lambda')
+@ns.param('topic', 'topic name')
+class LambdaSubscription(Resource):
+    @staticmethod
+    @ns.expect(subscriber, validate=True)
+    def post(topic):
+        subscriptions = TopicSubscriptions(topic)
+        json_request = request.json
+        endpoint = json_request.get('endpoint')
+        if endpoint:
+            response = subscriptions.add(subscription_type='lambda', endpoint=endpoint)
+            #todo: add to dynamo to persist
+            return response
+        else:
+            return 'endpoint is required', 400
 

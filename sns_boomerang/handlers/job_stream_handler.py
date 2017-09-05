@@ -41,8 +41,8 @@ def _parse_record(stream_record, record_image_type=RecordImageType.NEW.value):
 
 def _handle_job_added(added_job):
     """
-    check if job topic is already created
-    create topic in sns, update topic arn table
+    check if job topic_resource is already created
+    create topic_resource in sns, update topic_resource arn table
     :param added_job:
     :return: None
     """

@@ -1,11 +1,5 @@
 from flask_restplus import Resource, Namespace
-from sns_boomerang.common.items import Job, Topic, TopicSubscriptions
-from flask import request
-import sns_boomerang.settings.util as util
-
-# todo: use marshal_with decorator
-
-
+from sns_boomerang.common.items import Job
 from .schemas import *
 
 ns = Namespace('jobs', description='schedule job')

@@ -1,5 +1,6 @@
 from flask_restplus import fields
 
+
 """
 requests
 """
@@ -14,6 +15,12 @@ def job_request_model():
     }
 
 
+def subscriber_request_model():
+    return {
+        'endpoint': fields.String(requied=True, description='lambda arn or https endpoints'),
+    }
+
+
 """
-topic response
+topic_resource response
 """
