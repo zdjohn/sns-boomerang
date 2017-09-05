@@ -11,14 +11,14 @@ job = ns.model('Job', model=job_request_model())
 
 
 @ns.route('/<string:topic>/schedule')
-@ns.param('topic', 'topic name: topic excepts \'a-z\', \'-\' and \'0-9\' only')
+@ns.param('topic', 'topic name: topic excepts \'a-z\', \'_\', \'-\' and \'0-9\' only')
 class ScheduleJob(Resource):
 
     @staticmethod
     @ns.expect(job, validate=True)
     def post(topic):
         if not util.letters_and_numbers_only(topic):
-            return 'bad topic name, topic excepts \'a-z\' and \'-\' and \'0-9\' only ', 400
+            return 'bad topic name, topic excepts \'a-z\' and \'0-9\' connected with \'_\' or \'-\' only ', 400
         json_request = request.json
         if not json_request.get('is_valid') in [0, 1]:
             return 'is_valid, could only be either 0 or 1'
@@ -42,6 +42,7 @@ class Topics(Resource):
             return 'bad topic name, topic excepts \'a-z\' and \'-\' and \'0-9\' only ', 400
         topic_item = Topic.get(topic)
         if topic_item:
+            # todo: bug with Decimal serialisation
             return topic_item.__dict__, 200
         return 404
 

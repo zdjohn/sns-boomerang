@@ -21,8 +21,6 @@ def _compute_default_hash(payload, version, topic, time_due):
     return m.hexdigest()
 
 
-
-
 class Job(object):
     """
     job class
@@ -118,7 +116,7 @@ class Topic(object):
     topic_resource class
     """
     def __init__(self, topic, arn='', time_updated=None, is_active=True):
-        self.time_updated = time_updated or datetime.utcnow().timestamp
+        self.time_updated = time_updated or Decimal(datetime.utcnow().timestamp())
         self.topic = topic
         self.arn = arn
         self.is_active = is_active
@@ -126,20 +124,22 @@ class Topic(object):
     @classmethod
     def get(cls, topic, check_is_active=False):
         """get topic_resource by topic_resource name"""
-        item_response = TOPIC_TABLE.get_item(Key={'topic_resource': topic})
+        item_response = TOPIC_TABLE.get_item(Key={'topic': topic})
         if item_response.get('Item'):
             item = item_response['Item']
             if not check_is_active or item.get('is_active'):
                 return cls(**item)
 
+# todo: make sure existing topic not being over writen by default
     def add_or_update(self):
         """
         update or add current topic_resource
         :return:
         """
         self.arn = self.arn or self._create_sns_topic_arn(self.topic)
-        self.time_updated = datetime.utcnow().timestamp
-        TOPIC_TABLE.put_item(Item=self.__dict__)
+        self.time_updated = Decimal(datetime.utcnow().timestamp())
+        response = TOPIC_TABLE.put_item(Item=self.__dict__)
+        return response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200
 
     def list_jobs(self):
         # todo: implement
@@ -163,7 +163,7 @@ class TopicSubscriptions(object):
         if topic:
             self.topic = topic
             self.topic_resource = sns_resource.Topic(topic.arn)
-        raise NameError("topic_resource: {} dose not exists".format(topic))
+        raise NameError("topic: {} dose not exists".format(topic))
 
     def lists(self):
         """
@@ -223,7 +223,10 @@ class TopicSubscriptions(object):
         # topic_resource
         return self.topic_resource.subscribe(Protocol=SubscriptionType.LAMBDA.value, Endpoint=lambda_arn)
 
-
-if __name__ == '__main__':
-    # j = Job.flush()
-    pass
+#
+# if __name__ == '__main__':
+#     t = Topic('topic_dry_run')
+#     print(t)
+#     t.add_or_update()
+#     # j = Job.flush()
+#     pass
