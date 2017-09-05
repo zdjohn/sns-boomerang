@@ -13,7 +13,7 @@ setup(
     version = "1.0.0",
     author = "John Di Zhang",
     author_email = "zhangdijohn@gmail.com",
-    description = ("a serverless setup of scheduled tasks"),
+    description = ("a serverless setup for scheduled tasks"),
     license = "MIT",
     keywords = "scheduled sns_resource",
     url = "http://packages.python.org/an_example_pypi_project",

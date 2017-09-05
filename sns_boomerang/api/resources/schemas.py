@@ -1,10 +1,11 @@
 from flask_restplus import fields
 
 
-"""
-requests
-"""
 def job_request_model():
+    """
+
+    :return:
+    """
     return {
         'id': fields.String(description='The job unique identifier'),
         'payload': fields.String(required=True, description='json string payload'),
@@ -16,8 +17,12 @@ def job_request_model():
 
 
 def subscriber_request_model():
+    """
+
+    :return:
+    """
     return {
-        'endpoint': fields.String(requied=True, description='lambda arn or https endpoints'),
+        'endpoint': fields.String(requied=True, description='lambda arn or https endpoints')
     }
 
 
