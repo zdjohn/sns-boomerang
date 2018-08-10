@@ -1,11 +1,11 @@
 import boto3
-import hashlib
 from datetime import datetime
 import json
-from sns_boomerang.settings import *
 from boto3.dynamodb.conditions import Key
 from enum import Enum
-from decimal import *
+from decimal import Decimal
+
+from sns_boomerang.settings import util, TABLE_JOBS, TABLE_SUBSCRIBERS, TABLE_TOPICS
 
 dynamo = boto3.resource('dynamodb')
 sns_resource = boto3.resource('sns')
@@ -19,15 +19,10 @@ class SubscriptionType(Enum):
     """subscription type that is supported"""
     API = 'api'
     LAMBDA = 'lambda'
+    SQS = 'sqs'
 
 
-def _compute_default_hash(payload, version, topic, time_due):
-    m = hashlib.md5()
-    m.update('{}{}{}{}'.format(payload, version, topic, time_due).encode('utf-8'))
-    return m.hexdigest()
-
-
-class Job(object):
+class Job():
     """
     job class
     """
@@ -41,7 +36,7 @@ class Job(object):
         self.version = version
         self.is_valid = is_valid
         self.time_scheduled = time_scheduled or Decimal(datetime.utcnow().timestamp())
-        self.id = id or _compute_default_hash(payload, version, topic, time_due)
+        self.id = id or util.compute_hash(payload, version, topic, time_due)
 
     def add_or_update(self):
         """update to add scheduled job"""
@@ -52,7 +47,7 @@ class Job(object):
     def get(cls, id, check_active_status=False):
         """get job by id"""
         item_response = JOB_TABLE.get_item(
-            Key={'id':id, 'is_valid':1}
+            Key={'id':id}
         )
         if item_response.get('Item'):
             item = item_response['Item']
@@ -117,7 +112,7 @@ class Job(object):
         )
 
 
-class Topic(object):
+class Topic():
     """
     topic class 
     """
@@ -158,7 +153,7 @@ class Topic(object):
             return topic_response.get('TopicArn', '')
 
 
-class TopicSubscriptions(object):
+class TopicSubscriptions():
     """
     subscription per topic
     """

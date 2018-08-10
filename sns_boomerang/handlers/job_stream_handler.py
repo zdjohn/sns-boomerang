@@ -1,4 +1,4 @@
-from sns_boomerang.common.items import *
+from sns_boomerang.common.items import Job, Topic, TopicSubscriptions
 from enum import Enum
 
 
@@ -35,7 +35,7 @@ def _parse_record(stream_record, record_image_type=RecordImageType.NEW.value):
     :return: Job
     """
     job_record = stream_record.get('dynamodb', {}).get(record_image_type)
-    job = Job.get_by_stream_record(job_record)
+    job = Job.from_stream_record(job_record)
     return job
 
 
