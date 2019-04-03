@@ -1,6 +1,6 @@
 {
     "dev": {
-        "app_function": "sns_boomerang.api.app.app",
+        "app_function": "app.app",
         "keep_warm": false,
         "cors": true,
         "binary_support": false,
