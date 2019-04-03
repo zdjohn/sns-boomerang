@@ -1,7 +1,7 @@
 # sns-boomerang
-scheduled sns with aws lambda in a serverless way
+in the event sourcing world, if we can contorl (schedule) the events, then we can schedule our applications invocaltion.
 
-swagger: https://0ez607sve0.execute-api.ap-southeast-2.amazonaws.com/dev/doc/
+sns-boomerang schedules sns in a serverless fashion.
 
 ![boomerang](boomerang.png)
 
@@ -23,3 +23,9 @@ install dependency
 # Deploy 
 `zappa deploy`  
 more on zappa checkout: https://github.com/Miserlou/Zappa
+
+# Reference
+https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Operations_Amazon_DynamoDB_Streams.html  
+https://aws.amazon.com/sns/  
+https://aws.amazon.com/sqs/  
+https://aws.amazon.com/lambda/  

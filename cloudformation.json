@@ -1,0 +1,120 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+   
+    "Description" : "AWS CloudFormation Sample Template DynamoDB_Table: This template demonstrates the creation of a DynamoDB table.  **WARNING** This template creates an Amazon DynamoDB table. You will be billed for the AWS resources used if you create a stack from this template.",
+   
+    "Parameters" : {
+      "ReadCapacityUnits" : {
+        "Description" : "Provisioned read throughput",
+        "Type" : "Number",
+        "Default" : "5",
+        "MinValue": "5",
+        "MaxValue": "10000",
+        "ConstraintDescription" : "must be between 5 and 10000"
+      },
+      "WriteCapacityUnits" : {
+        "Description" : "Provisioned write throughput",
+        "Type" : "Number",
+        "Default" : "10",
+        "MinValue": "5",
+        "MaxValue": "10000",
+        "ConstraintDescription" : "must be between 5 and 10000"
+      }
+    },
+    "Resources" : {
+      "DdbTopic" : {
+        "Type" : "AWS::DynamoDB::Table",
+        "Properties" : {
+          "TableName": "table-topic",
+          "AttributeDefinitions": [ 
+            {
+                "AttributeName": "topic",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "arn",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "is_active",
+                "AttributeType": "BOOL"
+            }
+           ],
+          "KeySchema": [
+            {
+                "AttributeName": "topic",
+                "KeyType": "HASH"
+            }
+          ],
+          "ProvisionedThroughput" : {
+            "ReadCapacityUnits" : {"Ref" : "ReadCapacityUnits"},
+            "WriteCapacityUnits" : {"Ref" : "WriteCapacityUnits"}
+          }                
+        }
+      },
+      "DdbJobs" : {
+        "Type" : "AWS::DynamoDB::Table",
+        "Properties" : {
+          "TableName": "table-scheduled-jobs",
+          "AttributeDefinitions": [
+              {
+                  "AttributeName": "id",
+                  "AttributeType": "S"
+              },
+              {
+                  "AttributeName": "is_valid",
+                  "AttributeType": "N"
+              },
+              {
+                  "AttributeName": "time_due",
+                  "AttributeType": "N"
+              }
+          ],
+          "StreamSpecification": {
+            "StreamEnabled": true,
+            "StreamViewType": "NEW_AND_OLD_IMAGES"
+          },
+          "KeySchema": [
+              {
+                  "AttributeName": "id",
+                  "KeyType": "HASH"
+              }
+          ],
+          "GlobalSecondaryIndexes": [
+            {
+                "IndexName": "is_valid-time_due-index",
+                "KeySchema": [
+                    {
+                        "AttributeName": "is_valid",
+                        "KeyType": "HASH"
+                    },
+                    {
+                        "AttributeName": "time_due",
+                        "KeyType": "RANGE"
+                    }
+                ],
+                "Projection": {
+                    "ProjectionType": "ALL"
+                },
+                "IndexStatus": "ACTIVE",
+                "ProvisionedThroughput": {
+                  "ReadCapacityUnits" : {"Ref" : "ReadCapacityUnits"},
+                  "WriteCapacityUnits" : {"Ref" : "WriteCapacityUnits"}
+                }
+            }
+          ],
+          "ProvisionedThroughput" : {
+            "ReadCapacityUnits" : {"Ref" : "ReadCapacityUnits"},
+            "WriteCapacityUnits" : {"Ref" : "WriteCapacityUnits"}
+          }                
+        }
+      }
+    },
+    "Outputs" : {
+      "TableName" : {
+        "Value" : {"Ref" : "DdbTopic"},
+        "Description" : "Table name of the newly created DynamoDB table"
+      }
+    }
+  }
+  

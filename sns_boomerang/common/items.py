@@ -5,14 +5,13 @@ from boto3.dynamodb.conditions import Key
 from enum import Enum
 from decimal import Decimal
 
-from sns_boomerang.settings import util, TABLE_JOBS, TABLE_SUBSCRIBERS, TABLE_TOPICS
+from sns_boomerang.settings import util, TABLE_JOBS, TABLE_TOPICS
 
 dynamo = boto3.resource('dynamodb')
 sns_resource = boto3.resource('sns')
 sns_client =boto3.client('sns')
 JOB_TABLE = dynamo.Table(TABLE_JOBS)
 TOPIC_TABLE = dynamo.Table(TABLE_TOPICS)
-# TOPIC_SUBSCRIBER_TABLE = dynamo.Table(TABLE_SUBSCRIBERS)
 
 
 class SubscriptionType(Enum):
@@ -191,8 +190,3 @@ class TopicSubscriptions():
 
     def _add_lambda(self, lambda_arn):
         self.topic.subscribe(Protocol='lambda', Endpoint=lambda_arn)
-
-
-if __name__ == '__main__':
-    # j = Job.flush()
-    pass
