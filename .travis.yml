@@ -5,8 +5,9 @@ matrix:
       dist: xenial
       sudo: true
 install:
+  - pip install pytest-cov
   - pip install -r requirements.txt
 script:
-  - pytest
+  - pytest --cov=sns_boomerang
 after_success:
   - codecov
