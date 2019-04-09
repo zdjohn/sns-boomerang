@@ -5,7 +5,7 @@ matrix:
       dist: xenial
       sudo: true
 install:
-  - pip install tox
+  - pip install -r requirements.txt
 script:
   - export AWS_DEFAULT_REGION=us-west-2
-  - tox -e test -- --cov=sns_boomerang tests
+  - pytest
