@@ -8,4 +8,4 @@ install:
   - pip install -r requirements.txt
 script:
   - export AWS_DEFAULT_REGION=us-west-2
-  - pytest --cov=sns_boomerang tests
+  - pytest
