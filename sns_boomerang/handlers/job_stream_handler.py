@@ -1,4 +1,4 @@
-from sns_boomerang.common.items import Job, Topic, TopicSubscriptions
+from sns_boomerang.common.items import Job, Topic
 from enum import Enum
 
 

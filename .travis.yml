@@ -6,4 +6,6 @@ matrix:
       sudo: true
 install:
   - pip install tox
-script: tox -e test -- --cov=sns_boomerang tests
+script:
+  - export AWS_DEFAULT_REGION=us-west-2
+  - tox -e test -- --cov=sns_boomerang tests
