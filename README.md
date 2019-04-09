@@ -1,5 +1,7 @@
 # sns-boomerang
 
+[![Build Status](https://travis-ci.org/zdjohn/sns-boomerang.svg?branch=master)](https://travis-ci.org/zdjohn/sns-boomerang)
+
 in the event sourcing world, if we can contorl (schedule) the events, then we can schedule our applications invocaltion.
 
 sns-boomerang schedules sns in a serverless fashion.
