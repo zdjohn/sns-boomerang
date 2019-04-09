@@ -45,15 +45,16 @@ class Job():
         JOB_TABLE.put_item(Item=self.__dict__)
 
     @classmethod
-    def get(cls, id, check_active_status=False):
+    def get(cls, id, check_valid=False):
         """get job by id"""
         item_response = JOB_TABLE.get_item(
             Key={'id': id}
         )
         if item_response.get('Item'):
             item = item_response['Item']
-            if not check_active_status or item.get('is_active'):
+            if not check_valid or item.get('is_valid'):
                 return cls(**item)
+        return None
 
     @classmethod
     def from_stream_record(cls, record):
