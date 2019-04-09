@@ -9,7 +9,7 @@ from sns_boomerang.settings import util, TABLE_JOBS, TABLE_TOPICS
 
 dynamo = boto3.resource('dynamodb')
 sns_resource = boto3.resource('sns')
-sns_client =boto3.client('sns')
+sns_client = boto3.client('sns')
 JOB_TABLE = dynamo.Table(TABLE_JOBS)
 TOPIC_TABLE = dynamo.Table(TABLE_TOPICS)
 
@@ -25,6 +25,7 @@ class Job():
     """
     job class
     """
+
     def __init__(self, topic, payload, time_due, id='', version=1, is_valid=1, time_scheduled=None, **kwargs):
         """
         :type id: string
@@ -34,7 +35,8 @@ class Job():
         self.time_due = time_due
         self.version = version
         self.is_valid = is_valid
-        self.time_scheduled = time_scheduled or Decimal(datetime.utcnow().timestamp())
+        self.time_scheduled = time_scheduled or Decimal(
+            datetime.utcnow().timestamp())
         self.id = id or util.compute_hash(payload, version, topic, time_due)
 
     def add_or_update(self):
@@ -46,7 +48,7 @@ class Job():
     def get(cls, id, check_active_status=False):
         """get job by id"""
         item_response = JOB_TABLE.get_item(
-            Key={'id':id}
+            Key={'id': id}
         )
         if item_response.get('Item'):
             item = item_response['Item']
@@ -76,7 +78,8 @@ class Job():
         current = Decimal(datetime.utcnow().timestamp())
         jobs_response = JOB_TABLE.query(
             IndexName='is_valid-time_due-index',
-            KeyConditionExpression=Key('is_valid').eq(1) & Key('time_due').lt(current)
+            KeyConditionExpression=Key('is_valid').eq(
+                1) & Key('time_due').lt(current)
         )
         items = jobs_response.get('Items')
         if items:
@@ -115,6 +118,7 @@ class Topic():
     """
     topic class 
     """
+
     def __init__(self, topic, arn='', time_updated=None, is_active=True):
         self.time_updated = time_updated or datetime.utcnow().timestamp
         self.topic = topic
@@ -137,7 +141,9 @@ class Topic():
         """
         self.arn = self.arn or self._create_sns_topic_arn(self.topic)
         self.time_updated = datetime.utcnow().timestamp
-        TOPIC_TABLE.put_item(Item=self.__dict__)
+        topic_item = self.__dict__
+        TOPIC_TABLE.put_item(Item=topic_item)
+        return topic_item
 
     def list_jobs(self):
         # todo: implement
@@ -156,6 +162,7 @@ class TopicSubscriptions():
     """
     subscription per topic
     """
+
     def __init__(self, topic):
         topic = Topic.get(topic, check_is_active=True)
         if topic:

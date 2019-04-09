@@ -1,26 +1,26 @@
 {
-    "dev": {
-        "app_function": "app.app",
-        "keep_warm": false,
-        "cors": true,
-        "binary_support": false,
-        "aws_region": "ap-southeast-2",
-        "profile_name": "rulai",
-        "s3_bucket": "lambda-sns-boomerang",
-        "events": [
-          {
-             "function": "sns_boomerang.handlers.job_stream_handler.handle_stream",
-             "event_source": {
-                  "arn":  "arn:aws:dynamodb:ap-southeast-2:407736405886:table/t-jobs/stream/2017-08-13T11:18:27.959",
-                  "starting_position": "TRIM_HORIZON", // Supported values: TRIM_HORIZON, LATEST
-                  "batch_size": 50, // Max: 1000
-                  "enabled": true // Default is false
-             }
-          },
-          {
-                "function": "sns_boomerang.handlers.ttl_enforcer.flush",
-                "expression": "rate(1 minute)"
-          }
-       ]
-    }
+  "dev": {
+    "app_function": "app.app",
+    "keep_warm": false,
+    "cors": true,
+    "binary_support": false,
+    "aws_region": "ap-southeast-2",
+    "profile_name": "rulai",
+    "s3_bucket": "lambda-sns-boomerang",
+    "events": [
+      {
+        "function": "sns_boomerang.handlers.job_stream_handler.handle_stream",
+        "event_source": {
+          "arn": "arn:aws:dynamodb:ap-southeast-2:407736405886:table/t-jobs/stream/2017-08-13T11:18:27.959",
+          "starting_position": "TRIM_HORIZON", // Supported values: TRIM_HORIZON, LATEST
+          "batch_size": 50, // Max: 1000
+          "enabled": true // Default is false
+        }
+      },
+      {
+        "function": "sns_boomerang.handlers.ttl_enforcer.flush",
+        "expression": "rate(1 minute)"
+      }
+    ]
+  }
 }

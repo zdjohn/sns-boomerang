@@ -10,5 +10,5 @@ def letters_and_numbers_only(text):
 
 def compute_hash(*args):
     m = hashlib.md5()
-    m.update(''.join(args).encode('utf-8'))
+    m.update(''.join([str(x) for x in args]).encode('utf-8'))
     return m.hexdigest()

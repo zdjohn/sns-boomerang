@@ -13,18 +13,28 @@ class RecordImageType(Enum):
     OLD = 'OldImage'
 
 
-def handle_stream(update):
+def _handle_job_added(event):
     """
-    parsing dynamo db update events batch
-    :param update: {'Records':[...]}
+    check if job topic is already created
+    create topic in sns, update topic arn table
+    :param added_job:
     :return: None
     """
-    events = update.get('Records', [])
-    for event in events:
-        if UpdateType.INSERT.value == event.get('eventName'):
-            _handle_job_added(_parse_record(event, RecordImageType.NEW.value))
-        if UpdateType.REMOVE.value == event.get('eventName'):
-            _handle_job_due(_parse_record(event, RecordImageType.OLD.value))
+    added_job = _parse_record(event, RecordImageType.NEW.value)
+    topic = Topic.get(added_job.topic, check_is_active=True)
+    if topic:
+        topic.add_or_update()
+        return True
+    return False
+
+
+def _handle_job_due(event):
+    """publish job with its payload"""
+    job = _parse_record(event, RecordImageType.OLD.value)
+    if job and job.is_valid:
+        job.publish()
+        return True
+    return False
 
 
 def _parse_record(stream_record, record_image_type=RecordImageType.NEW.value):
@@ -39,19 +49,20 @@ def _parse_record(stream_record, record_image_type=RecordImageType.NEW.value):
     return job
 
 
-def _handle_job_added(added_job):
+def handle_stream(update):
     """
-    check if job topic is already created
-    create topic in sns, update topic arn table
-    :param added_job:
+    parsing dynamo db update events batch
+    :param update: {'Records':[...]}
     :return: None
     """
-    topic = Topic.get(added_job.topic, check_is_active=True)
-    if topic:
-        topic.add_or_update()
+    handler_mapping = {
+        UpdateType.INSERT.value: _handle_job_added,
+        UpdateType.REMOVE.value: _handle_job_due
+    }
 
-
-def _handle_job_due(job):
-    """publish job with its payload"""
-    if job.is_valid:
-        job.publish()
+    events = update.get('Records', [])
+    event_processed = {'INSERT': 0, 'REMOVE': 0}
+    for event in events:
+        if event.get('eventName') != UpdateType.MODIFY.value and handler_mapping[event.get('eventName')](event):
+            event_processed[event.get('eventName')] += 1
+    return event_processed
