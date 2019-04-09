@@ -6,6 +6,7 @@ matrix:
       sudo: true
 install:
   - pip install pytest-cov
+  - pip install --user codecov
   - pip install -r requirements.txt
 script:
   - pytest --cov=sns_boomerang
