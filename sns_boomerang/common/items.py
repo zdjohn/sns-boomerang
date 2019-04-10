@@ -99,11 +99,9 @@ class Job():
         job_topic = Topic.get(self.topic)
 
         if not job_topic.arn:
-            print('arn can not be none')
-            return
+            return {'error': 'arn can not be none'}
         if not self.payload:
-            print('payload can not be none')
-            return
+            return {'error': 'payload empty'}
         message = json.dumps({'payload': json.loads(self.payload)})
         sns_client.publish(
             TopicArn=job_topic.arn,
