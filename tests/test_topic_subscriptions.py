@@ -4,6 +4,8 @@ import pytest
 test_topic = 'test_topic_name'
 test_topic_arn = 'test_topic_arn'
 test_sub_arn = 'test-sub-arn'
+test_protocol = 'test-protocol-value'
+test_endpoint = 'test-endpoint-value'
 
 test_subscibers_list = ['subscription', 'iterator']
 
@@ -18,6 +20,11 @@ class MockSubscriptions():
 class MockTopic():
     def __init__(self, arn):
         self.subscriptions = MockSubscriptions()
+
+    def subscribe(self, Protocol, Endpoint):
+        assert Protocol == test_protocol
+        assert Endpoint == test_endpoint
+        return True
 
 
 class MockSub():
@@ -73,3 +80,11 @@ def test_remove_subscriber_from_topic(monkeypatch):
 
     subs.remove(test_sub_arn)
     assert sub_mock.is_deleted
+
+
+def test_add_subscribe_to_topic(monkeypatch):
+    monkeypatch.setattr(Topic, 'get', mock_topic_get)
+    monkeypatch.setattr(sns_resource, 'Topic', mock_boto3_topic_resource)
+
+    subs = TopicSubscriptions(test_topic)
+    assert subs.add(test_protocol, test_endpoint)

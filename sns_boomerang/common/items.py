@@ -16,7 +16,7 @@ TOPIC_TABLE = dynamo.Table(TABLE_TOPICS)
 
 class SubscriptionType(Enum):
     """subscription type that is supported"""
-    API = 'api'
+    HTTPS = 'https'
     LAMBDA = 'lambda'
     SQS = 'sqs'
 
@@ -175,27 +175,15 @@ class TopicSubscriptions():
         subscription_iterator = self.topic.subscriptions.all()
         return subscription_iterator
 
-    def add(self, subscription_type=SubscriptionType.API, endpoint=''):
-        """
-        add subscriptions by type
-        """
-        switcher = {
-            SubscriptionType.API: self._add_https,
-            SubscriptionType.LAMBDA: self._add_lambda
-        }
-        response = switcher[subscription_type](endpoint)
-        return response
-
     def remove(self, subscription_arn):
         """remove subscription by arn"""
         subscription = sns_resource.Subscription(subscription_arn)
         subscription.delete()
 
-    def _add_https(self, endpoint):
-        self.topic.subscribe(Protocol='https', Endpoint=endpoint)
-
-    def _add_lambda(self, lambda_arn):
-        self.topic.subscribe(Protocol='lambda', Endpoint=lambda_arn)
-
-    def _add_sqs(self, sqs_arn):
-        self.topic.subscribe(Protocol='sqs', Endpoint=sqs_arn)
+    def add(self, subscription_type=SubscriptionType.SQS.value, endpoint_arn=''):
+        """
+        add subscriptions by type
+        """
+        response = self.topic.subscribe(Protocol=subscription_type,
+                                        Endpoint=endpoint_arn)
+        return response
