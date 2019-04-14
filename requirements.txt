@@ -8,8 +8,8 @@ aniso8601==6.0.0          # via flask-restplus
 argcomplete==1.9.3        # via zappa
 arrow==0.13.1
 attrs==19.1.0             # via jsonschema
-boto3==1.9.127            # via kappa, zappa
-botocore==1.12.127        # via boto3, s3transfer, zappa
+boto3==1.9.130            # via kappa, zappa
+botocore==1.12.130        # via boto3, s3transfer, zappa
 certifi==2019.3.9         # via requests
 cfn-flip==1.2.0           # via troposphere
 chardet==3.0.4            # via requests
@@ -22,7 +22,7 @@ future==0.16.0            # via zappa
 hjson==3.0.1              # via zappa
 idna==2.8                 # via requests
 itsdangerous==1.1.0       # via flask
-jinja2==2.10              # via flask
+jinja2==2.10.1            # via flask
 jmespath==0.9.3           # via boto3, botocore, zappa
 jsonschema==3.0.1         # via flask-restplus
 kappa==0.6.0              # via zappa
@@ -32,7 +32,7 @@ placebo==0.9.0            # via kappa
 pyrsistent==0.14.11       # via jsonschema
 python-dateutil==2.6.1    # via arrow, botocore, zappa
 python-slugify==1.2.4     # via zappa
-pytz==2018.9              # via flask-restplus
+pytz==2019.1              # via flask-restplus
 pyyaml==5.1               # via cfn-flip, kappa, zappa
 requests==2.21.0          # via zappa
 s3transfer==0.2.0         # via boto3

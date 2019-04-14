@@ -1,6 +1,5 @@
 from sns_boomerang.common.items import sns_client, Job, Topic, TOPIC_TABLE
 import pytest
-from unittest.mock import MagicMock
 from datetime import datetime
 
 

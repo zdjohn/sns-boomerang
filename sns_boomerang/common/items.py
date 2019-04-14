@@ -164,9 +164,9 @@ class TopicSubscriptions():
 
     def __init__(self, topic):
         topic = Topic.get(topic, check_is_active=True)
-        if topic:
-            self.topic = sns_resource.Topic(topic.arn)
-        raise NameError("topic: {} dose not exists".format(topic))
+        if not topic:
+            raise NameError("topic: {} dose not exists".format(topic.topic))
+        self.topic = sns_resource.Topic(topic.arn)
 
     def lists(self):
         """
@@ -196,3 +196,6 @@ class TopicSubscriptions():
 
     def _add_lambda(self, lambda_arn):
         self.topic.subscribe(Protocol='lambda', Endpoint=lambda_arn)
+
+    def _add_sqs(self, sqs_arn):
+        self.topic.subscribe(Protocol='sqs', Endpoint=sqs_arn)
