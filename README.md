@@ -15,8 +15,8 @@ before you start
 `pip install tox`  
 run command (install dev dependency)  
 `tox -e dev`  
-activate virtual env
-`source .tox/dev/bin/activate`
+activate virtual env  
+`source .tox/dev/bin/activate`  
 install dependency  
 `pip install -r requirements.txt`
 

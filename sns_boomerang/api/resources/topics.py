@@ -1,12 +1,12 @@
 from flask_restplus import Resource, Namespace
 from sns_boomerang.common.items import Job, Topic, TopicSubscriptions
-from flask import request
+from flask import request, abort
 import sns_boomerang.settings.util as util
 
 # todo: use marshal_with decorator
 
 
-from .schemas import *
+from .schemas import job_request_model
 
 ns = Namespace('topics', description='schedule job')
 
@@ -17,12 +17,13 @@ job = ns.model('Job', model=job_request_model())
 @ns.param('topic', 'topic name: topic excepts \'a-z\', \'-\' and \'0-9\' only')
 class ScheduleJob(Resource):
     @ns.expect(job, validate=True)
-    def post(self, topic):
+    @staticmethod
+    def post(topic):
         if not util.letters_and_numbers_only(topic):
-            return 'bad topic name, topic excepts \'a-z\' and \'-\' and \'0-9\' only ', 400
+            return abort(400, error='bad topic name, topic excepts \'a-z\' and \'-\' and \'0-9\' only')
         json_request = request.json
         if not json_request.get('is_valid') in [0, 1]:
-            return 'is_valid, could only be either 0 or 1'
+            return abort(400, 'is_valid, could only be either 0 or 1')
         json_request['topic'] = topic
         job_request = Job(**json_request)
         job_request.add_or_update()
@@ -40,7 +41,7 @@ class Topics(Resource):
         :return:
         """
         if not util.letters_and_numbers_only(topic):
-            return 'bad topic name, topic excepts \'a-z\' and \'-\' and \'0-9\' only ', 400
+            return abort(400, error='bad topic name, topic excepts \'a-z\' and \'-\' and \'0-9\' only')
         topic_item = Topic.get(topic)
         if topic_item:
             return topic_item.__dict__, 200
@@ -54,4 +55,3 @@ class Subscriptions(Resource):
     def get(topic):
         subscriptions = TopicSubscriptions(topic)
         return subscriptions.lists(), 200
-
