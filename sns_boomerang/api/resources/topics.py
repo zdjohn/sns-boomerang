@@ -20,7 +20,7 @@ class ScheduleJob(Resource):
     @staticmethod
     def post(topic):
         if not util.letters_and_numbers_only(topic):
-            return abort(400, error='bad topic name, topic excepts \'a-z\' and \'-\' and \'0-9\' only')
+            return abort(400, 'bad topic name, topic excepts \'a-z\' and \'-\' and \'0-9\' only')
         json_request = request.json
         if not json_request.get('is_valid') in [0, 1]:
             return abort(400, 'is_valid, could only be either 0 or 1')
@@ -41,7 +41,7 @@ class Topics(Resource):
         :return:
         """
         if not util.letters_and_numbers_only(topic):
-            return abort(400, error='bad topic name, topic excepts \'a-z\' and \'-\' and \'0-9\' only')
+            return abort(400, 'bad topic name, topic excepts \'a-z\' and \'-\' and \'0-9\' only')
         topic_item = Topic.get(topic)
         if topic_item:
             return topic_item.__dict__, 200
