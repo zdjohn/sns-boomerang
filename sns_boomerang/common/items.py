@@ -144,9 +144,14 @@ class Topic():
         TOPIC_TABLE.put_item(Item=topic_item)
         return topic_item
 
-    def list_jobs(self):
-        # todo: implement
-        pass
+    def list_jobs(self, version):
+        jobs_response = JOB_TABLE.query(
+            IndexName='topic-version-index',
+            KeyConditionExpression=Key('topic').eq(
+                self.topic) & Key('version').eq(version)
+        )
+        items = jobs_response.get('Items', [])
+        return items
 
     @staticmethod
     def _create_sns_topic_arn(sns_topic):

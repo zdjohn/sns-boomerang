@@ -1,4 +1,4 @@
-from sns_boomerang.common.items import sns_client, Job, Topic, TOPIC_TABLE
+from sns_boomerang.common.items import sns_client, Job, Topic, TOPIC_TABLE, JOB_TABLE
 import pytest
 from datetime import datetime
 
@@ -45,3 +45,21 @@ def test_topic_add_or_update(monkeypatch):
     topic = test_topic.add_or_update()
 
     assert topic['arn'] == mock_topic_arn
+
+
+def test_topic_list_jobs(monkeypatch):
+    mocked_job_results = [
+        {'topic': 'test_topic', 'arn': 'payload', 'version': 1}]
+
+    def mock_query_items(IndexName, KeyConditionExpression, **kwargs):
+        assert IndexName == 'topic-version-index'
+        assert KeyConditionExpression
+        return {'Items': mocked_job_results}
+
+    monkeypatch.setattr(JOB_TABLE, 'query', mock_query_items)
+
+    topic = Topic('test_topic', arn='x')
+
+    responses = topic.list_jobs(version=1)
+
+    assert responses == mocked_job_results

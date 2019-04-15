@@ -62,6 +62,14 @@
             "AttributeType": "S"
           },
           {
+            "AttributeName": "topic",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "version",
+            "AttributeType": "N"
+          },
+          {
             "AttributeName": "is_valid",
             "AttributeType": "N"
           },
@@ -81,6 +89,27 @@
           }
         ],
         "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "topic-version-index",
+            "KeySchema": [
+              {
+                "AttributeName": "topic",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "version",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            },
+            "IndexStatus": "ACTIVE",
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": { "Ref": "ReadCapacityUnits" },
+              "WriteCapacityUnits": { "Ref": "WriteCapacityUnits" }
+            }
+          },
           {
             "IndexName": "is_valid-time_due-index",
             "KeySchema": [
