@@ -45,7 +45,7 @@ class Topics(Resource):
         topic_item = Topic.get(topic)
         if topic_item:
             return topic_item.__dict__, 200
-        return 404
+        return abort(404)
 
 
 @ns.route('/<string:topic>/subscriptions')
