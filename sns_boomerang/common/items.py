@@ -184,6 +184,7 @@ class TopicSubscriptions():
         """remove subscription by arn"""
         subscription = sns_resource.Subscription(subscription_arn)
         subscription.delete()
+        return True
 
     def add(self, subscription_type=SubscriptionType.SQS.value, endpoint_arn=''):
         """

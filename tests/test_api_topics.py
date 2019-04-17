@@ -3,6 +3,7 @@ from sns_boomerang.common.items import Job, Topic, TopicSubscriptions, sns_resou
 import pytest
 from unittest import mock
 from werkzeug.exceptions import NotFound, BadRequest
+from .conftest import test_topic
 
 
 def test_post_job_with_bad_naming():
@@ -25,5 +26,11 @@ def test_get_topic_details(monkeypatch):
     monkeypatch.setattr(Topic, 'get', mock_topic_get)
     response = Topics.get(test_topic)
 
+    assert response[0]
+    assert response[1] == 200
+
+
+def test_list_topic_subscriptions(setup_topic_resource):
+    response = Subscriptions.get(test_topic)
     assert response[0]
     assert response[1] == 200
