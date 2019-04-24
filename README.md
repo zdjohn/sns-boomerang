@@ -5,6 +5,8 @@
 
 sns-boomerang schedules sns in a serverless fashion.
 
+![handler seperation](Seperation.png)
+
 ![boomerang](boomerang.png)
 
 # SETUP

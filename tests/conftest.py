@@ -37,27 +37,26 @@ class MockSub():
 
 mock_topic = Topic(test_topic, arn=test_topic_arn)
 
+
 sub_mock = MockSub(test_sub_arn)
-
-
-def mock_topic_get(topic_name, check_is_active):
-    assert topic_name == test_topic
-    assert check_is_active == True
-    return mock_topic
-
-
-def mock_boto3_topic_resource(arn):
-    assert arn == test_topic_arn
-    return MockTopic(arn)
-
-
-def mock_get_sub(sub_arn):
-    assert sub_arn == test_sub_arn
-    return sub_mock
 
 
 @pytest.fixture(scope='function')
 def setup_topic_resource(monkeypatch):
+
+    def mock_topic_get(topic_name, check_is_active):
+        assert topic_name == test_topic
+        assert check_is_active == True
+        return mock_topic
+
+    def mock_boto3_topic_resource(arn):
+        assert arn == test_topic_arn
+        return MockTopic(arn)
+
+    def mock_get_sub(sub_arn):
+        assert sub_arn == test_sub_arn
+        return sub_mock
+
     monkeypatch.setattr(Topic, 'get', mock_topic_get)
     monkeypatch.setattr(sns_resource, 'Topic', mock_boto3_topic_resource)
     monkeypatch.setattr(sns_resource, 'Subscription', mock_get_sub)
