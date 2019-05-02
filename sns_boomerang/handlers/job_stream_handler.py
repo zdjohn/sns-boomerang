@@ -21,11 +21,12 @@ def _handle_job_added(event):
     :return: None
     """
     added_job = _parse_record(event, RecordImageType.NEW.value)
-    topic = Topic.get(added_job.topic, check_is_active=True)
+    topic = Topic.get(added_job.topic, check_is_active=False)
     if topic:
+        return topic.is_active
+    else:
         topic.add_or_update()
         return True
-    return False
 
 
 def _handle_job_due(event):

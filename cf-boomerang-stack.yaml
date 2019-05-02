@@ -1,0 +1,103 @@
+Outputs:
+  ddbJobTable:
+    Description: job table
+    Value: !Ref "tableJob"
+  ddbTopicTable:
+    Description: job table
+    Value: !Ref "tableTopic"
+  iamRole:
+    Description: access
+    Value: !Ref "SnsBoomerangRole"
+Parameters:
+  ReadCapacityUnits:
+    ConstraintDescription: should be between 5 and 10000
+    Default: "5"
+    Description: Provisioned read throughput
+    MaxValue: "10000"
+    MinValue: "5"
+    Type: Number
+  WriteCapacityUnits:
+    ConstraintDescription: should be between 5 and 10000
+    Default: "5"
+    Description: Provisioned write throughput
+    MaxValue: "10000"
+    MinValue: "5"
+    Type: Number
+Resources:
+  SnsBoomerangRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccesswithDataPipeline
+      Path: /
+      RoleName: snsBoomerangRole
+    Type: AWS::IAM::Role
+  tableJob:
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: topic
+          AttributeType: S
+        - AttributeName: version
+          AttributeType: N
+        - AttributeName: time_due
+          AttributeType: N
+      GlobalSecondaryIndexes:
+        - IndexName: topic-version-index
+          KeySchema:
+            - AttributeName: topic
+              KeyType: HASH
+            - AttributeName: version
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: !Ref "ReadCapacityUnits"
+            WriteCapacityUnits: !Ref "WriteCapacityUnits"
+        - IndexName: topic-time_due-index
+          KeySchema:
+            - AttributeName: topic
+              KeyType: HASH
+            - AttributeName: time_due
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: !Ref "ReadCapacityUnits"
+            WriteCapacityUnits: !Ref "WriteCapacityUnits"
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref "ReadCapacityUnits"
+        WriteCapacityUnits: !Ref "WriteCapacityUnits"
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: t-jobs
+      TimeToLiveSpecification:
+        AttributeName: time_due
+        Enabled: "true"
+    Type: AWS::DynamoDB::Table
+  tableTopic:
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: topic
+          AttributeType: S
+        - AttributeName: arn
+          AttributeType: S
+      KeySchema:
+        - AttributeName: topic
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref "ReadCapacityUnits"
+        WriteCapacityUnits: !Ref "WriteCapacityUnits"
+      TableName: t-topics
+    Type: AWS::DynamoDB::Table
