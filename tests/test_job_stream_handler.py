@@ -15,16 +15,17 @@ def mock_pass_or_none(*args, **kwargs):
 
 
 def test_job_added(monkeypatch):
+    topic_name = 'mock-topic'
 
     def mock_topic_get(topic, check_is_active):
-        assert check_is_active == True
-        assert topic == 'mock-topic'
+        assert check_is_active == False
+        assert topic == topic_name
         topic = Topic(topic, arn='mocked-arn')
         monkeypatch.setattr(topic, 'add_or_update', mock_pass_or_none)
         return topic
 
     job_new = {'Records': [{'eventName': 'INSERT',
-                            'dynamodb': {'NewImage': {'id': {'S': 'mock-id'}, 'topic': {'S': 'mock-topic'}}}}]}
+                            'dynamodb': {'NewImage': {'id': {'S': 'mock-id'}, 'topic': {'S': topic_name}}}}]}
     monkeypatch.setattr(Topic, 'get', mock_topic_get)
     log = job_stream_handler.handle_stream(job_new)
     assert log['INSERT'] == 1
@@ -32,11 +33,17 @@ def test_job_added(monkeypatch):
 
 
 def test_job_added_empty_topic(monkeypatch):
+
     job_new = {'Records': [{'eventName': 'INSERT',
                             'dynamodb': {'NewImage': {'id': {'S': 'mock-id'}, 'topic': {'S': 'mock-topic'}}}}]}
+
     monkeypatch.setattr(Topic, 'get', mock_pass_or_none)
+    monkeypatch.setattr(Topic, 'add_or_update', mock_pass_or_none)
+
     log = job_stream_handler.handle_stream(job_new)
-    assert log['INSERT'] == 0
+
+    assert log['INSERT'] == 1
+    assert log['TOPIC_NEW'] == 1
     assert log['REMOVE'] == 0
 
 

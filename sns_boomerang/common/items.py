@@ -119,7 +119,8 @@ class Topic():
     """
 
     def __init__(self, topic, arn='', time_updated=None, is_active=True):
-        self.time_updated = time_updated or datetime.utcnow().timestamp
+        self.time_updated = time_updated or Decimal(
+            datetime.utcnow().timestamp())
         self.topic = topic
         self.arn = arn
         self.is_active = is_active
@@ -127,7 +128,8 @@ class Topic():
     @classmethod
     def get(cls, topic, check_is_active=False):
         """get topic by topic name"""
-        item_response = TOPIC_TABLE.get_item(Key={'topic': topic})
+        item_response = TOPIC_TABLE.get_item(
+            Key={'topic': topic}, ConsistentRead=True)
         if item_response.get('Item'):
             item = item_response['Item']
             if not check_is_active or item.get('is_active'):
@@ -139,7 +141,7 @@ class Topic():
         :return:
         """
         self.arn = self.arn or self._create_sns_topic_arn(self.topic)
-        self.time_updated = datetime.utcnow().timestamp
+        self.time_updated = Decimal(datetime.utcnow().timestamp())
         topic_item = self.__dict__
         TOPIC_TABLE.put_item(Item=topic_item)
         return topic_item

@@ -25,6 +25,9 @@ class MockTopic():
         assert Endpoint == test_endpoint
         return True
 
+    def add_or_update(self):
+        return {'topic': 'moked_item'}
+
 
 class MockSub():
     def __init__(self, arn):

@@ -13,29 +13,31 @@ class RecordImageType(Enum):
     OLD = 'OldImage'
 
 
-def _handle_job_added(event):
-    """
-    check if job topic is already created
-    create topic in sns, update topic arn table
-    :param added_job:
-    :return: None
-    """
-    added_job = _parse_record(event, RecordImageType.NEW.value)
-    topic = Topic.get(added_job.topic, check_is_active=False)
-    if topic:
-        return topic.is_active
-    else:
-        topic.add_or_update()
-        return True
+def _handle_job_added(events):
+    new_jobs = [_parse_record(event, RecordImageType.NEW.value) for event in events
+                if (event.get('eventName') == UpdateType.INSERT.value)]
+    new_topic_count = 0
+    for topic_name in set([job.topic for job in new_jobs]):
+        topic = Topic.get(topic_name, check_is_active=False)
+        if not topic:
+            new_topic = Topic(topic_name)
+            new_topic.add_or_update()
+            new_topic_count += 1
+
+    return len(new_jobs), new_topic_count
 
 
-def _handle_job_due(event):
+def _handle_job_due(events):
     """publish job with its payload"""
-    job = _parse_record(event, RecordImageType.OLD.value)
-    if job and job.is_valid:
-        job.publish()
-        return True
-    return False
+    total_job_precessed = 0
+    due_events = [events for event in events
+                  if (event.get('eventName') == UpdateType.REMOVE.value)]
+    for event in due_events:
+        job = _parse_record(event, RecordImageType.OLD.value)
+        if job and job.is_valid:
+            job.publish()
+            total_job_precessed += 1
+    return total_job_precessed
 
 
 def _parse_record(stream_record, record_image_type=RecordImageType.NEW.value):
@@ -56,14 +58,17 @@ def handle_stream(update):
     :param update: {'Records':[...]}
     :return: None
     """
-    handler_mapping = {
-        UpdateType.INSERT.value: _handle_job_added,
-        UpdateType.REMOVE.value: _handle_job_due
-    }
 
     events = update.get('Records', [])
-    event_processed = {'INSERT': 0, 'REMOVE': 0}
-    for event in events:
-        if event.get('eventName') != UpdateType.MODIFY.value and handler_mapping[event.get('eventName')](event):
-            event_processed[event.get('eventName')] += 1
+    event_processed = {'INSERT': 0, 'REMOVE': 0, 'TOPIC_NEW': 0}
+
+    # handle new jobs
+    inserted, new_topic = _handle_job_added(events)
+
+    event_processed['INSERT'] = inserted
+    event_processed['TOPIC_NEW'] = new_topic
+
+    # handle job due
+    event_processed['REMOVE'] = _handle_job_due(events)
+
     return event_processed
