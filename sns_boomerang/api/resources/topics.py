@@ -15,8 +15,8 @@ job = ns.model('Job', model=job_request_model())
 
 @ns.route('/<string:topic>/schedule')
 @ns.param('topic', 'topic name: topic excepts \'a-z\', \'-\' and \'0-9\' only')
+@ns.expect(job, validate=True)
 class ScheduleJob(Resource):
-    @ns.expect(job, validate=True)
     @staticmethod
     def post(topic):
         if not util.letters_and_numbers_only(topic):
