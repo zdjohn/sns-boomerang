@@ -14,6 +14,10 @@ JOB_TABLE = dynamo.Table(TABLE_JOBS)
 TOPIC_TABLE = dynamo.Table(TABLE_TOPICS)
 
 
+def utc_now():
+    return datetime.utcnow().timestamp()
+
+
 class SubscriptionType(Enum):
     """subscription type that is supported"""
     HTTPS = 'https'
@@ -35,13 +39,12 @@ class Job():
         self.time_due = time_due
         self.version = version
         self.is_valid = is_valid
-        self.time_scheduled = time_scheduled or Decimal(
-            datetime.utcnow().timestamp())
+        self.time_scheduled = time_scheduled or int(utc_now())
         self.id = id or util.compute_hash(payload, version, topic, time_due)
 
     def add_or_update(self):
         """update to add scheduled job"""
-        self.time_scheduled = Decimal(datetime.utcnow().timestamp())
+        self.time_scheduled = int(utc_now())
         JOB_TABLE.put_item(Item=self.__dict__)
 
     @classmethod
@@ -76,7 +79,7 @@ class Job():
 
         :return:
         """
-        current = Decimal(datetime.utcnow().timestamp())
+        current = int(utc_now())
         jobs_response = JOB_TABLE.query(
             IndexName='is_valid-time_due-index',
             KeyConditionExpression=Key('is_valid').eq(
@@ -119,8 +122,7 @@ class Topic():
     """
 
     def __init__(self, topic, arn='', time_updated=None, is_active=True):
-        self.time_updated = time_updated or Decimal(
-            datetime.utcnow().timestamp())
+        self.time_updated = time_updated or int(utc_now())
         self.topic = topic
         self.arn = arn
         self.is_active = is_active
@@ -141,7 +143,7 @@ class Topic():
         :return:
         """
         self.arn = self.arn or self._create_sns_topic_arn(self.topic)
-        self.time_updated = Decimal(datetime.utcnow().timestamp())
+        self.time_updated = int(utc_now())
         topic_item = self.__dict__
         TOPIC_TABLE.put_item(Item=topic_item)
         return topic_item

@@ -1,13 +1,8 @@
+AWSTemplateFormatVersion: 2010-09-09
 Outputs:
-  ddbJobTable:
-    Description: job table
-    Value: !Ref "tableJob"
-  ddbTopicTable:
-    Description: job table
-    Value: !Ref "tableTopic"
-  iamRole:
-    Description: access
-    Value: !Ref "SnsBoomerangRole"
+  ZappaAppLambdaRoleArn:
+    Description: The name of the created IAM role for zappa app Lambda
+    Value: !GetAtt BoomerangLambdaRole.Arn
 Parameters:
   ReadCapacityUnits:
     ConstraintDescription: should be between 5 and 10000
@@ -24,21 +19,81 @@ Parameters:
     MinValue: "5"
     Type: Number
 Resources:
-  SnsBoomerangRole:
+  BoomerangLambdaRole:
+    Type: AWS::IAM::Role
     Properties:
+      RoleName: "SnsBoomerangRole"
       AssumeRolePolicyDocument:
+        Version: "2012-10-17"
         Statement:
-          - Action:
-              - sts:AssumeRole
-            Effect: Allow
+          - Effect: Allow
             Principal:
               Service:
+                - apigateway.amazonaws.com
                 - lambda.amazonaws.com
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccesswithDataPipeline
-      Path: /
-      RoleName: snsBoomerangRole
-    Type: AWS::IAM::Role
+                - events.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: "DefaultLambdaPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                  - xray:PutTraceSegments
+                  - xray:PutTelemetryRecords
+                  - ec2:AttachNetworkInterface
+                  - ec2:CreateNetworkInterface
+                  - ec2:DeleteNetworkInterface
+                  - ec2:DescribeInstances
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DetachNetworkInterface
+                  - ec2:ModifyNetworkInterfaceAttribute
+                  - ec2:ResetNetworkInterfaceAttribute
+                  - sns:*
+                  - sqs:*
+                  - route53:*
+                Resource:
+                  - "*"
+        - PolicyName: "DynamoDbStream"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:DescribeStream
+                  - dynamodb:GetRecords
+                  - dynamodb:GetShardIterator
+                  - dynamodb:ListStreams
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:BatchGetItem
+                  - dynamodb:BatchWriteItem
+                Resource:
+                  - "arn:aws:dynamodb:::table/table-boomerang-jobs"
+                  - "arn:aws:dynamodb:::table/table-boomerang-topics"
+        - PolicyName: "S3Bucket"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:Get*
+                  - s3:List*
+                  - s3:Put*
+                  - s3:Delete*
+                Resource:
+                  - "arn:aws:s3:::lambda-sns-boomerang" # rollbacks bucket
   tableJob:
     Properties:
       AttributeDefinitions:
@@ -81,7 +136,7 @@ Resources:
         WriteCapacityUnits: !Ref "WriteCapacityUnits"
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
-      TableName: t-jobs
+      TableName: table-boomerang-jobs
       TimeToLiveSpecification:
         AttributeName: time_due
         Enabled: "true"
@@ -91,13 +146,11 @@ Resources:
       AttributeDefinitions:
         - AttributeName: topic
           AttributeType: S
-        - AttributeName: arn
-          AttributeType: S
       KeySchema:
         - AttributeName: topic
           KeyType: HASH
       ProvisionedThroughput:
         ReadCapacityUnits: !Ref "ReadCapacityUnits"
         WriteCapacityUnits: !Ref "WriteCapacityUnits"
-      TableName: t-topics
+      TableName: table-boomerang-topics
     Type: AWS::DynamoDB::Table
