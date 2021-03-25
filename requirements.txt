@@ -4,45 +4,118 @@
 #
 #    pip-compile 
 #
-aniso8601==6.0.0          # via flask-restplus
-argcomplete==1.9.3        # via zappa
+aniso8601==6.0.0
+    # via flask-restplus
+argcomplete==1.9.3
+    # via zappa
 arrow==0.13.1
-attrs==19.1.0             # via jsonschema
-boto3==1.9.130            # via kappa, zappa
-botocore==1.12.130        # via boto3, s3transfer, zappa
-certifi==2019.3.9         # via requests
-cfn-flip==1.2.0           # via troposphere
-chardet==3.0.4            # via requests
-click==7.0                # via cfn-flip, flask, kappa
-docutils==0.14            # via botocore, zappa
-durationpy==0.5           # via zappa
+    # via -r requirements.in
+attrs==19.1.0
+    # via jsonschema
+boto3==1.9.130
+    # via
+    #   kappa
+    #   zappa
+botocore==1.12.130
+    # via
+    #   boto3
+    #   s3transfer
+    #   zappa
+certifi==2019.3.9
+    # via requests
+cfn-flip==1.2.0
+    # via troposphere
+chardet==3.0.4
+    # via requests
+click==7.0
+    # via
+    #   cfn-flip
+    #   flask
+    #   kappa
+docutils==0.14
+    # via
+    #   botocore
+    #   zappa
+durationpy==0.5
+    # via zappa
 flask-restplus==0.12.1
+    # via -r requirements.in
 flask==1.0.2
-future==0.16.0            # via zappa
-hjson==3.0.1              # via zappa
-idna==2.8                 # via requests
-itsdangerous==1.1.0       # via flask
-jinja2==2.10.1            # via flask
-jmespath==0.9.3           # via boto3, botocore, zappa
-jsonschema==3.0.1         # via flask-restplus
-kappa==0.6.0              # via zappa
-lambda-packages==0.20.0   # via zappa
-markupsafe==1.1.1         # via jinja2
-placebo==0.9.0            # via kappa
-pyrsistent==0.14.11       # via jsonschema
-python-dateutil==2.6.1    # via arrow, botocore, zappa
-python-slugify==1.2.4     # via zappa
-pytz==2019.1              # via flask-restplus
-pyyaml==5.1               # via cfn-flip, kappa, zappa
-requests==2.21.0          # via zappa
-s3transfer==0.2.0         # via boto3
-six==1.12.0               # via cfn-flip, flask-restplus, jsonschema, pyrsistent, python-dateutil, zappa
-toml==0.10.0              # via zappa
-tqdm==4.19.1              # via zappa
-troposphere==2.4.6        # via zappa
-unidecode==1.0.23         # via python-slugify
-urllib3==1.24.1           # via botocore, requests
-werkzeug==0.15.2          # via flask, zappa
-wheel==0.33.1             # via zappa
-wsgi-request-logger==0.4.6  # via zappa
+    # via
+    #   -r requirements.in
+    #   flask-restplus
+future==0.16.0
+    # via zappa
+hjson==3.0.1
+    # via zappa
+idna==2.8
+    # via requests
+itsdangerous==1.1.0
+    # via flask
+jinja2==2.10.1
+    # via flask
+jmespath==0.9.3
+    # via
+    #   boto3
+    #   botocore
+    #   zappa
+jsonschema==3.0.1
+    # via flask-restplus
+kappa==0.6.0
+    # via zappa
+lambda-packages==0.20.0
+    # via zappa
+markupsafe==1.1.1
+    # via jinja2
+placebo==0.9.0
+    # via kappa
+pyrsistent==0.14.11
+    # via jsonschema
+python-dateutil==2.6.1
+    # via
+    #   arrow
+    #   botocore
+    #   zappa
+python-slugify==1.2.4
+    # via zappa
+pytz==2019.1
+    # via flask-restplus
+pyyaml==5.4
+    # via
+    #   cfn-flip
+    #   kappa
+    #   zappa
+requests==2.21.0
+    # via zappa
+s3transfer==0.2.0
+    # via boto3
+six==1.12.0
+    # via
+    #   cfn-flip
+    #   flask-restplus
+    #   jsonschema
+    #   pyrsistent
+    #   python-dateutil
+    #   zappa
+toml==0.10.0
+    # via zappa
+tqdm==4.19.1
+    # via zappa
+troposphere==2.4.6
+    # via zappa
+unidecode==1.0.23
+    # via python-slugify
+urllib3==1.24.1
+    # via
+    #   botocore
+    #   requests
+werkzeug==0.15.2
+    # via
+    #   flask
+    #   zappa
+wheel==0.33.1
+    # via zappa
+wsgi-request-logger==0.4.6
+    # via zappa
 zappa==0.48.2
+    # via -r requirements.in
